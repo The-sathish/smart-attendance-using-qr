@@ -1,0 +1,59 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: sessions
+// Document ID: auto-generated
+// Fields:
+//   - subject: string (required) - Name of the subject
+//   - className: string (optional) - Name of the class
+//   - active: boolean (required) - Status of the session
+//   - createdAt: timestamp (required) - Creation time
+//
+// Collection: attendance
+// Document ID: auto-generated
+// Fields:
+//   - sessionId: string (required) - ID of the session
+//   - studentName: string (required) - Name of the student
+//   - rollNumber: string (required) - Roll number of the student
+//   - timestamp: timestamp (required) - Submission time
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+    function isValidSession(data) {
+      return data.keys().hasAll(['subject', 'active', 'createdAt']) &&
+             data.subject is string && data.subject.size() > 0 && data.subject.size() < 100 &&
+             data.active is bool &&
+             data.createdAt is timestamp &&
+             (!('className' in data) || (data.className is string && data.className.size() < 100));
+    }
+
+    function isValidAttendance(data) {
+      return data.keys().hasAll(['sessionId', 'studentName', 'rollNumber', 'timestamp']) &&
+             data.sessionId is string &&
+             data.studentName is string && data.studentName.size() > 0 && data.studentName.size() < 100 &&
+             data.rollNumber is string && data.rollNumber.size() > 0 && data.rollNumber.size() < 50 &&
+             data.timestamp is timestamp;
+    }
+
+    match /sessions/{sessionId} {
+      // Allowing public access as requested "no login required"
+      allow read: if true;
+      allow create, update: if isValidSession(request.resource.data);
+    }
+
+    match /attendance/{recordId} {
+      // Allowing public access for students to submit and teachers to see
+      allow create: if true && isValidAttendance(request.resource.data);
+      allow read: if true; // Teacher needs to read all records for their session
+    }
+    
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

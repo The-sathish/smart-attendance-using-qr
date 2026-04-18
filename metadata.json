@@ -1,0 +1,5 @@
+{
+  "name": "QR Attendance System",
+  "description": "A real-time QR code based student attendance tracking system.",
+  "requestFramePermissions": []
+}

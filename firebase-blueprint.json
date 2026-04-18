@@ -1,0 +1,64 @@
+{
+  "entities": {
+    "Session": {
+      "title": "Attendance Session",
+      "description": "Represents a class session for which attendance is being taken.",
+      "type": "object",
+      "properties": {
+        "subject": {
+          "type": "string",
+          "description": "The name of the subject."
+        },
+        "className": {
+          "type": "string",
+          "description": "The name of the class (optional)."
+        },
+        "active": {
+          "type": "boolean",
+          "description": "Whether the session is currently active and accepting attendance."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the session was created."
+        }
+      },
+      "required": ["subject", "active", "createdAt"]
+    },
+    "AttendanceRecord": {
+      "title": "Attendance Record",
+      "description": "Represents a student's attendance submission for a specific session.",
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string",
+          "description": "The ID of the session this record belongs to."
+        },
+        "studentName": {
+          "type": "string",
+          "description": "The name of the student."
+        },
+        "rollNumber": {
+          "type": "string",
+          "description": "The roll number of the student."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the attendance was submitted."
+        }
+      },
+      "required": ["sessionId", "studentName", "rollNumber", "timestamp"]
+    }
+  },
+  "firestore": {
+    "sessions/{sessionId}": {
+      "schema": "Session",
+      "description": "Collection of attendance sessions."
+    },
+    "attendance/{recordId}": {
+      "schema": "AttendanceRecord",
+      "description": "Collection of all attendance records across all sessions."
+    }
+  }
+}
